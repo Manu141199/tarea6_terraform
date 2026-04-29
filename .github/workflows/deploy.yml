@@ -1,0 +1,24 @@
+name: "CI/CD Despliegue LocalStack"
+on: [push]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "1. Descargando codigo"
+        uses: actions/checkout@v4
+
+      - name: "2. Arrancando LocalStack"
+        run: |
+          pip install localstack
+          localstack start -d
+          localstack wait -t 30
+
+      - name: "3. Configurando Terraform"
+        uses: hashicorp/setup-terraform@v3
+
+      - name: "4. Init, Plan y Apply"
+        run: |
+          terraform init
+          terraform plan
+          terraform apply -auto-approve
